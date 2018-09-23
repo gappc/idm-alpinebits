@@ -8,9 +8,9 @@ package it.idm.alpinebits.middleware;
  * thus be used for data exchange between the middlewares.
  * <p>
  * The context implements the {@link ExceptionHandler} interface.
- * Context implementations should catch exceptions that occur while
+ * Context implementations should handle exceptions that occur while
  * the middlewares are executed. This way, the exception handling
- * is part of the context and can be specialized if needed
+ * is part of the context and can be specialized if needed.
  */
 public interface Context extends ExceptionHandler {
 

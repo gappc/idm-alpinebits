@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * All this this {@link ExceptionHandler} does is to log the given exception.
+ * All this {@link ExceptionHandler} does is to log the given exception.
  */
 public class LoggingExceptionHandler implements ExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingExceptionHandler.class);
