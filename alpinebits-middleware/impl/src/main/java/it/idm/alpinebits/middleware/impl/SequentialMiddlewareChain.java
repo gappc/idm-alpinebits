@@ -7,9 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Implementation of {@link MiddlewareChain} that calls the configured middlewares in the providewd order.
+ * {@link MiddlewareChain} implementation that calls the configured list of
+ * {@link Middleware} objects in the provided order.
+ *
+ * This implementation is not suited to handle composed middleware lists.
  */
 public class SequentialMiddlewareChain implements MiddlewareChain {
 
@@ -26,23 +30,32 @@ public class SequentialMiddlewareChain implements MiddlewareChain {
         if (middlewares == null) {
             throw new IllegalArgumentException("The middlewares must not be null");
         }
+        for (Middleware middleware : middlewares) {
+            if (middleware == null) {
+                throw new IllegalArgumentException("The middleware must not be null");
+            }
+        }
         this.ctx = ctx;
-        this.middlewares = middlewares;
+        this.middlewares = new CopyOnWriteArrayList<>(middlewares);
     }
 
     @Override
+    @SuppressWarnings("checkstyle:illegalcatch")
     public void next() {
-        LOG.trace("Invocation of next() method");
-
         int chainSize = this.middlewares.size();
 
         if (this.index < chainSize - 1) {
             this.index++;
             Middleware currentMiddleware = this.middlewares.get(this.index);
-            LOG.debug("Calling next middleware {} ({} of {} in this chain)", currentMiddleware, index + 1, chainSize);
-            this.middlewares.get(this.index).handleRequest(this.ctx, this);
+            LOG.debug("{} calls next middleware {} ({} of {} in this chain)", this, currentMiddleware, index + 1, chainSize);
+
+            try {
+                this.middlewares.get(this.index).handle(this.ctx, this);
+            } catch(Exception e) {
+                this.ctx.handleException(e);
+            }
         } else {
-            LOG.debug("No more middelwares to call (total: {} middlewares)", middlewares.size());
+            LOG.debug("{} has no more middelwares to call (total: {} middlewares)", this, middlewares.size());
         }
     }
 
