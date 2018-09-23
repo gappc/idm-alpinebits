@@ -9,21 +9,28 @@ import it.idm.alpinebits.middleware.MiddlewareChain;
  */
 public class MiddlewareBuilder {
 
+    public static final String EXCEPTION_MESSAGE = "FROM MIDDLEAWARE";
+    public static final String FULL_EXCEPTION_MESSAGE = "java.lang.RuntimeException: " + EXCEPTION_MESSAGE;
+
     /**
      * Build and return a {@link Middleware}, where the value is added to the
      * {@link Context} state.
      *
-     * @param key the key used to store the value in the {@link Context} state
-     * @param value the value stored in the {@link Context} state
+     * @param key      the key used to store the value in the {@link Context} state
+     * @param value    the value stored in the {@link Context} state
+     * @param callNext if the middleware should invoke the {@link MiddlewareChain#next()}
+     *                 method
      * @return the {@link Middleware} with the value added to the {@link Context}
      * state
      */
-    public static Middleware buildMiddleware(String key, Object value) {
+    public static Middleware buildMiddleware(String key, Object value, boolean callNext) {
         return new Middleware() {
             @Override
-            public void handleRequest(Context ctx, MiddlewareChain chain) {
-                ctx.setState(key, value);
-                chain.next();
+            public void handle(Context ctx, MiddlewareChain chain) {
+                ctx.set(key, value);
+                if (callNext) {
+                    chain.next();
+                }
             }
         };
     }
@@ -36,8 +43,8 @@ public class MiddlewareBuilder {
     public static Middleware buildThrowingMiddleware() {
         return new Middleware() {
             @Override
-            public void handleRequest(Context ctx, MiddlewareChain chain) {
-                throw new RuntimeException();
+            public void handle(Context ctx, MiddlewareChain chain) {
+                throw new RuntimeException(EXCEPTION_MESSAGE);
             }
         };
     }

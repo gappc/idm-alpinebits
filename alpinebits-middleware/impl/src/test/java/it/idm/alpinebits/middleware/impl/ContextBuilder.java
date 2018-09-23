@@ -14,7 +14,7 @@ public class ContextBuilder {
      * @return a {@link SimpleContext}
      */
     public static SimpleContext buildSimpleContext() {
-        return new SimpleContext(ContainerBuilder.buildSimpleContainer());
+        return new SimpleContext();
     }
 
 }

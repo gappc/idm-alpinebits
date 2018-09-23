@@ -1,6 +1,5 @@
 package it.idm.alpinebits.middleware.impl;
 
-import it.idm.alpinebits.middleware.Container;
 import it.idm.alpinebits.middleware.Context;
 import org.testng.annotations.Test;
 
@@ -12,40 +11,28 @@ import static org.testng.Assert.*;
 public class SimpleContextTest {
 
     @Test
-    public void testGetContainer() throws Exception {
-        Container container = new SimpleContainer();
-        Context ctx = new SimpleContext(container);
-        assertEquals(container, ctx.getContainer());
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testInitEmptyContainer() throws Exception {
-        new SimpleContext(null);
-    }
-
-    @Test
     public void testGetState() throws Exception {
         Context ctx = ContextBuilder.buildSimpleContext();
 
         String intKey = "intKey";
         int intValue = 1;
-        ctx.setState(intKey, intValue);
-        assertEquals(intValue, ctx.getState(intKey, Integer.class).intValue());
+        ctx.set(intKey, intValue);
+        assertEquals(intValue, ctx.get(intKey, Integer.class).intValue());
 
         String longKey = "longKey";
         Long longValue = 2L;
-        ctx.setState(longKey, longValue);
-        assertEquals(longValue, ctx.getState(longKey, Long.class));
+        ctx.set(longKey, longValue);
+        assertEquals(longValue, ctx.get(longKey, Long.class));
 
         String stringKey = "stringKey";
         String stringValue = "one";
-        ctx.setState(stringKey, stringValue);
-        assertEquals(stringValue, ctx.getState(stringKey, String.class));
+        ctx.set(stringKey, stringValue);
+        assertEquals(stringValue, ctx.get(stringKey, String.class));
 
         String objectKey = "objectKey";
         Object objectValue = new Object();
-        ctx.setState(objectKey, objectValue);
-        assertEquals(objectValue, ctx.getState(objectKey, Object.class));
+        ctx.set(objectKey, objectValue);
+        assertEquals(objectValue, ctx.get(objectKey, Object.class));
     }
 
     @Test
@@ -54,12 +41,12 @@ public class SimpleContextTest {
 
         String intKey = "intKey";
         int intValue1 = 1;
-        ctx.setState(intKey, intValue1);
-        assertEquals(intValue1, ctx.getState(intKey, Integer.class).intValue());
+        ctx.set(intKey, intValue1);
+        assertEquals(intValue1, ctx.get(intKey, Integer.class).intValue());
 
         int intValue2 = 2;
-        ctx.setState(intKey, intValue2);
-        assertEquals(intValue2, ctx.getState(intKey, Integer.class).intValue());
+        ctx.set(intKey, intValue2);
+        assertEquals(intValue2, ctx.get(intKey, Integer.class).intValue());
     }
 
     @Test
@@ -68,13 +55,13 @@ public class SimpleContextTest {
 
         String intKey = "intKey";
         int intValue = 1;
-        ctx.setState(intKey, intValue);
-        assertEquals(intValue, ctx.getState(intKey, Integer.class).intValue());
+        ctx.set(intKey, intValue);
+        assertEquals(intValue, ctx.get(intKey, Integer.class).intValue());
 
-        int removedValue = (int)ctx.removeState(intKey);
+        int removedValue = (int)ctx.remove(intKey);
 
         assertEquals(intValue, removedValue);
-        assertNull(ctx.getState(intKey, Integer.class));
+        assertNull(ctx.get(intKey, Integer.class));
     }
 
     @Test
@@ -83,9 +70,9 @@ public class SimpleContextTest {
 
         String intKey = "intKey";
         int intValue = 1;
-        ctx.setState(intKey, intValue);
+        ctx.set(intKey, intValue);
 
-        assertTrue(ctx.stateContainsKey(intKey));
-        assertFalse(ctx.stateContainsKey("not existing key"));
+        assertTrue(ctx.contains(intKey));
+        assertFalse(ctx.contains("not existing key"));
     }
 }

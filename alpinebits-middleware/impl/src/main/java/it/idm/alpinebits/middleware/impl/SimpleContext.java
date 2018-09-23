@@ -1,50 +1,41 @@
 package it.idm.alpinebits.middleware.impl;
 
-import it.idm.alpinebits.middleware.Container;
 import it.idm.alpinebits.middleware.Context;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Simple {@link Context} implementation that covers the base cases.
+ * Simple {@link Context} implementation, that uses a {@link ConcurrentHashMap}
+ * to handle the context state.
  */
 public class SimpleContext implements Context {
 
-    private final Container container;
     private final Map<String, Object> state = new ConcurrentHashMap<>();
 
-
-    public SimpleContext(Container container) {
-        if (container == null) {
-            throw new IllegalArgumentException("The container must not be null");
-        }
-        this.container = container;
+    @Override
+    public <T> T get(String key, Class<T> clazz) {
+        return (T) this.state.get(key);
     }
 
     @Override
-    public Container getContainer() {
-        return this.container;
-    }
-
-    @Override
-    public <T> T getState(String key, Class<T> clazz) {
-        return (T)this.state.get(key);
-    }
-
-    @Override
-    public Context setState(String key, Object value) {
+    public Context set(String key, Object value) {
         this.state.put(key, value);
         return this;
     }
 
     @Override
-    public Object removeState(String key) {
+    public Object remove(String key) {
         return this.state.remove(key);
     }
 
     @Override
-    public boolean stateContainsKey(String key) {
+    public boolean contains(String key) {
         return this.state.containsKey(key);
+    }
+
+    @Override
+    public void handleException(Exception e) {
+        throw new RuntimeException(e);
     }
 }
