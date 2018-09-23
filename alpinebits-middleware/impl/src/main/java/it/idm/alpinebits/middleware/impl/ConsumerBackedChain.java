@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 
 /**
- * {@link MiddlewareChain} implementation that implements its chaining
+ * This is a {@link MiddlewareChain} implementation that implements its chaining
  * mechanism with {@link Consumer}.
  * <p>
  * This chain is most often used in combination with the {@link ComposingMiddlewareBuilder}.

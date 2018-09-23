@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * {@link MiddlewareChain} implementation that calls the configured list of
- * {@link Middleware} objects in the provided order.
- *
- * This implementation is not suited to handle composed middleware lists.
+ * This is a {@link MiddlewareChain} implementation that calls the configured list
+ * of {@link Middleware} objects in the provided order.
  */
 public class SequentialMiddlewareChain implements MiddlewareChain {
 
@@ -51,7 +49,7 @@ public class SequentialMiddlewareChain implements MiddlewareChain {
 
             try {
                 this.middlewares.get(this.index).handle(this.ctx, this);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 this.ctx.handleException(e);
             }
         } else {

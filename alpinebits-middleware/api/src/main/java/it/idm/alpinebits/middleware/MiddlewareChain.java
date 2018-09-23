@@ -1,10 +1,10 @@
 package it.idm.alpinebits.middleware;
 
 /**
- * A MiddlewareChain is an object provided by the {@link Container} to the developer
- * giving a view into the {@link Middleware} invocation chain. Middlewares use the
- * MiddlewareChain to invoke the next middleware in the chain, or if the calling middleware
- * is the last middleware in the chain, to invoke the resource at the end of the chain.
+ * A MiddlewareChain is an object provided to the developer giving a view into the
+ * {@link Middleware} invocation chain. Middlewares use the MiddlewareChain to invoke
+ * the next middleware in the chain, or if the calling middleware is the last middleware
+ * in the chain, to invoke the resource at the end of the chain.
  */
 public interface MiddlewareChain {
 
