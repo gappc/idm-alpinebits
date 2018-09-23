@@ -84,8 +84,7 @@ public class ComposingMiddlewareBuilderTest {
         Middleware middleware2 = MiddlewareBuilder.buildMiddleware(KEY_2, VALUE_2, middleware2CallsNext);
 
         Middleware composedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1, middleware2));
-        composedMiddleware.handle(ctx, () -> {
-        });
+        composedMiddleware.handle(ctx, null);
 
         assertEquals(ctx.get(KEY_1, String.class), VALUE_1);
         assertEquals(ctx.get(KEY_2, String.class), expectedValue);
@@ -107,6 +106,53 @@ public class ComposingMiddlewareBuilderTest {
         Middleware composedMiddleware = ComposingMiddlewareBuilder.compose(middlewares);
     }
 
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = MiddlewareBuilder.EXCEPTION_MESSAGE)
+    public void testComposeWithFirstMiddlewareThrowing() throws Exception {
+        Context ctx = ContextBuilder.buildSimpleContext();
+
+        Middleware middleware1 = MiddlewareBuilder.buildThrowingMiddleware();
+        Middleware composedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1));
+        composedMiddleware.handle(ctx, null);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = MiddlewareBuilder.EXCEPTION_MESSAGE)
+    public void testComposeWithSecondMiddlewareThrowing() throws Exception {
+        Context ctx = ContextBuilder.buildSimpleContext();
+
+        Middleware middleware1 = MiddlewareBuilder.buildMiddleware(KEY_1, VALUE_1, true);
+        Middleware middleware2 = MiddlewareBuilder.buildThrowingMiddleware();
+        Middleware composedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1, middleware2));
+        composedMiddleware.handle(ctx, null);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = MiddlewareBuilder.EXCEPTION_MESSAGE)
+    public void testComposeWithFirstComposingMiddlewareThrowing() throws Exception {
+        Context ctx = ContextBuilder.buildSimpleContext();
+
+        Middleware middleware1 = MiddlewareBuilder.buildMiddleware(KEY_1, VALUE_1, true);
+        Middleware middleware2 = MiddlewareBuilder.buildThrowingMiddleware();
+        Middleware middleware3 = MiddlewareBuilder.buildMiddleware(KEY_2, VALUE_2, true);
+
+        Middleware tmpComposedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1, middleware2));
+        Middleware finalComposedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(tmpComposedMiddleware, middleware3));
+
+        finalComposedMiddleware.handle(ctx, null);
+    }
+
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = MiddlewareBuilder.EXCEPTION_MESSAGE)
+    public void testComposeWithSecondComposingMiddlewareThrowing() throws Exception {
+        Context ctx = ContextBuilder.buildSimpleContext();
+
+        Middleware middleware1 = MiddlewareBuilder.buildMiddleware(KEY_1, VALUE_1, true);
+        Middleware middleware2 = MiddlewareBuilder.buildThrowingMiddleware();
+        Middleware middleware3 = MiddlewareBuilder.buildMiddleware(KEY_2, VALUE_2, true);
+
+        Middleware tmpComposedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware2, middleware3));
+        Middleware finalComposedMiddleware = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1, tmpComposedMiddleware));
+
+        finalComposedMiddleware.handle(ctx, null);
+    }
+
     @Test(dataProvider = "testNestedComposeDataProvider")
     public void testNestedCompose_WhereComposedMiddlewareIsFirst(
             boolean middleware1CallsNext,
@@ -126,8 +172,7 @@ public class ComposingMiddlewareBuilderTest {
         // Compose tmpComposedMiddleware and middleware 3
         Middleware finalComposedMiddlewar = ComposingMiddlewareBuilder.compose(Arrays.asList(tmpComposedMiddleware, middleware3));
 
-        finalComposedMiddlewar.handle(ctx, () -> {
-        });
+        finalComposedMiddlewar.handle(ctx, null);
 
         assertEquals(ctx.get(KEY_1, String.class), VALUE_1);
         assertEquals(ctx.get(KEY_3, String.class), expectedValue);
@@ -152,8 +197,7 @@ public class ComposingMiddlewareBuilderTest {
         // Compose middleware1 and tmpComposedMiddleware and middleware 3
         Middleware finalComposedMiddlewar = ComposingMiddlewareBuilder.compose(Arrays.asList(middleware1, tmpComposedMiddleware));
 
-        finalComposedMiddlewar.handle(ctx, () -> {
-        });
+        finalComposedMiddlewar.handle(ctx, null);
 
         assertEquals(ctx.get(KEY_1, String.class), VALUE_1);
         assertEquals(ctx.get(KEY_3, String.class), expectedValue);
@@ -183,8 +227,7 @@ public class ComposingMiddlewareBuilderTest {
         // Compose middleware1 and tmpComposedMiddleware and middleware 3
         Middleware finalComposedMiddlewar = ComposingMiddlewareBuilder.compose(Arrays.asList(tmpComposedMiddleware1, tmpComposedMiddleware2));
 
-        finalComposedMiddlewar.handle(ctx, () -> {
-        });
+        finalComposedMiddlewar.handle(ctx, null);
 
         assertEquals(ctx.get(KEY_1, String.class), VALUE_1);
         assertEquals(ctx.get(KEY_4, String.class), expectedValue);

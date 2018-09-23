@@ -44,6 +44,7 @@ public class ComposingMiddlewareBuilder {
      * @throws IllegalArgumentException if the list of middlewares is null or if
      *         one of the middlewares in the list is null
      */
+    @SuppressWarnings("checkstyle:illegalcatch")
     public static Middleware compose(List<Middleware> incomingMiddlewares) {
         if (incomingMiddlewares == null) {
             throw new IllegalArgumentException("The list of middlewares must not be null");
@@ -71,7 +72,7 @@ public class ComposingMiddlewareBuilder {
 
                 // Build a consumer that, when invoked (i.e. "accepted"), calls the chains
                 // next method, leading to the following middlware to be invoked
-                Consumer<Context> next = context -> chain.next();
+                Consumer<Context> next = chain != null ? context -> chain.next() : context -> {};
 
                 // Build a Consumer for the first middleware in the list. If there is no
                 // element in the list, {@link ComposingMiddlewareBuilder#dispatch} returns a Consumer
@@ -155,10 +156,10 @@ public class ComposingMiddlewareBuilder {
                             nextConsumer
                     );
 
-                    // Pass the consumer to the handler of the current middleware.
+                    // Pass the next consumer to the handler of the current middleware.
                     // If the current middleware calls MiddlewareChain#next(), this consumer's
                     // Consumer#accept(Object) method is is called
-                    currentMiddleware.handle(ctx, new ConsumerBackedChain(ctx, nextConsumer));
+                    currentMiddleware.handle(ctx, () -> nextConsumer.accept(ctx));
                 } else {
                     LOG.trace(
                             "Consumer {} accepted. No middleware found, since index ({}) >= middlewares.size() ({}). Invoking next consumer",
